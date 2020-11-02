@@ -10,19 +10,21 @@ googleAnalytics = "251307803"
 
 disqusShortname = "pindasdatav2"
 
+staticDir = ["static1", "static2"]
 # enableRobotsTXT = true
 [languages]
   [languages.pt]
     languageName = "Portuguese"
     weight = 1
     contentDir = "content/portuguese"
-    motto = "My place in the internet, about many things and R."
+    motto = "Meu lugar na internet, sobre muitas coisas e R."
 
   [languages.en]
     languageName = "English"
     weight = 2
     contentDir = "content/english"
-    motto = "Meu lugar na internet, sobre muitas coisas e R."
+    motto = "My place in the internet, about many things and R."
+
 
     
 [params]
@@ -62,8 +64,8 @@ disqusShortname = "pindasdatav2"
   highlightjs = true
   # highlightjsCDN = "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"
   highlightjsExtraLanguages = ["ocaml", "R", "Rmd", "Python", "yaml", "toml"]
-  # highlightjsTheme = "gruvbox-light"
-  # highlightjsThemeDark = "gruvbox-dark"
+   highlightjsTheme = "gruvbox-light"
+   highlightjsThemeDark = "gruvbox-dark"
 
   # search
   # enableSearch = true

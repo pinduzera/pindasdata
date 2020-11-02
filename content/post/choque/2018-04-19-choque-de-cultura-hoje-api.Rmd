@@ -1,0 +1,229 @@
+---
+title: Choque de Cultura - Hoje, API
+author: Eduardo Ochetski Hellas
+date: '2018-04-19'
+slug: choque-de-cultura-hoje-api
+categories: []
+tags:
+  - r
+  - api
+  - microsoft api
+  - choque de cultura
+  - face recognition
+  - emotion analysis
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F)
+
+library('dplyr')
+library('tidyr')
+library('tibble')
+library('ggplot2')
+library('scales')
+library("gridExtra")
+library('grid')
+library('imager') 
+library('httr')
+
+# setwd('E:/Dropbox/Dropbox/Program/pindata/pinduzera.github.io/post/choque')
+emotionKEY = '0a7c1a4b80fc4a0dbf0a0b3512ab0c21'
+# Definir imagem cultural
+img.url = 'https://cdn-images-1.medium.com/max/1280/1*iNieUrcsuUTTvmr2BJR_bg.jpeg'
+
+# Definir link da API do Microsoft Azure
+api.url = 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect'
+
+# Definir chave de acesso 
+# (disponível em: https://www.microsoft.com/cognitive-services/en-us/emotion-api)
+emotionKEY = '0a7c1a4b80fc4a0dbf0a0b3512ab0c21'
+
+# Definir imagem para a API
+mybody = list(url = img.url)
+```
+
+Achou que não ia mais ter post? Achou errado, programador (ou curioso)! Hoje, análise de emoções e API.
+
+<center>
+<img src="/imgs/choque/choque.jpg" width="80%">
+</center>
+
+Primeiramente, queria dizer que o post não vai ser tão longo como queria pois não consegui de jeito nenhum obter as legendas dos vídeos do [Choque de Cultura](https://www.youtube.com/watch?v=4u1w1UnqI0Y), ou seja, vamos ficar sem análise textual, infelizmente. =(
+
+Segundo, se você não sabe, ainda, o que é [Choque de Cultura](https://www.youtube.com/watch?v=4u1w1UnqI0Y), vale a pena dar uma olhada em um humor bem peculiar.
+
+## API e R
+
+  Bem, como disse, hoje é um post sobre API utilizando o R, mais especificamente a [API do Microsoft Azure de detecção facial](https://azure.microsoft.com/pt-br/services/cognitive-services/face/). Quando vocês olham pra imagem acima, o que os rostos deles transmitem? Ódio? Calma? Felicidade? Vamos descobrir pois além de detectar rostos a API serve para identificar emoções dentre outras funcionalidades que vou listar mais para frente.
+  
+  Se você pretende copiar este post você vai precisar (do maravilhoso R, é claro) e criar uma conta no [Micrsoft Azure](https://azure.microsoft.com/pt-br/free/), ativar a API e pegar a chave para poder reproduzir o que vou mostrar. Se estiverem com dificuldade só falar nos comentários que passo mais detalhes de como fazer.
+  
+## Programando
+
+Para começar, alguns parâmetros básicos, não esqueçam de pegar a chave no site.
+  
+```{r inicio, eval=FALSE, echo = T}
+# Definir imagem cultural
+# tem que ser um link, não pode ser imagem local
+img.url = 'https://cdn-images-1.medium.com/max/1280/1*iNieUrcsuUTTvmr2BJR_bg.jpeg'
+
+# Definir link da API do Microsoft Azure
+api.url = 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect'
+
+# Definir chave de acesso 
+# (disponível em: https://www.microsoft.com/cognitive-services/en-us/emotion-api)
+emotionKEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
+# Definir imagem para a API
+mybody = list(url = img.url)
+
+### lista de pacotes utilizados
+# c('dplyr', 'tidyr', 'tibble','httr', 'ggplot2', 
+# 'scales', 'gridExtra', 'grid', 'imager') 
+
+```
+
+Aqui é a parte onde de fato faz a requisição para a API, ela retorna por padrão apenas a posição dos rostos mas existe uma série de argumentos (a variável é `returnFaceAttributes`) que podem ser adicionados como detectar se está usando óculos, barbas, maquiagem e o mais importante para nós, qual a emoção da nossa sopinha de abóbora.
+
+```{r part1, echo=TRUE}
+
+faceEMO = httr::POST(
+  url = api.url,
+  content_type('application/json'), 
+  add_headers(.headers = c('Ocp-Apim-Subscription-Key' = emotionKEY)),
+  body = mybody,
+  query = list(returnFaceAttributes = "emotion"),
+  encode = 'json'
+)
+
+#Outros argumentos
+# params = list('returnFaceId' = 'true',
+#   'returnFaceLandmarks'= 'false',
+#   'returnFaceAttributes'= 'age,gender,headPose,smile,facialHair,glasses,
+#    emotion,hair,makeup,occlusion,accessories,blur,exposure,noise')
+
+faceEMO
+# Se Status = 200, deu tudo acerto até então
+
+```
+
+
+Agora vamos usar os dados que obtivemos:
+
+```{r part2, echo = TRUE}
+
+# Obtendo os resultados
+faces <- httr::content(faceEMO)#[[1]]
+#Aqui temos a posição de cada rosto na imagem
+f1 <- faces[[1]]$faceRectangle %>% as_tibble() %>% t() ## Rogerinho do ingá
+f2 <- faces[[2]]$faceRectangle %>% as_tibble() %>% t() ## Julinho da Van
+f3 <- faces[[3]]$faceRectangle %>% as_tibble() %>% t() ## Maurílio
+f4 <- faces[[4]]$faceRectangle %>% as_tibble() %>% t() ## Renan
+
+#carregar a do PC imagem pro R
+image <- imager::load.image('C:/Users/ehell/Desktop/choque/choque.jpg')
+plot(image, xlim = c(0, 1300), main = 'Choque de Cultura: detecção de faces',
+     axes=T, yaxs='i')
+
+# desenhando os retângulos, os atributos que temos no f1 são 
+# top (ponto mais alto), left(ponto a esquerda), 
+# width (largura), e height (altura)
+# para desenhar as retas vamos usar cada um deles
+# f1[1,] = f1['top',]; f1[2,] = f1['left',] 
+# f1[3,] = f1['width',]; f1[4,] = f1['height',]
+
+rect(xleft = f1[2,], ytop = f1[1,], xright = f1[2,] + f1[3,],
+     ybottom = f1[1,] + f1[4,], border = 'blue', lwd = 2)
+rect(xleft = f2[2,], ytop = f2[1,], xright = f2[2,] + f2[3,],
+     ybottom = f2[1,] + f2[4,], border = 'blue', lwd = 2)
+rect(xleft = f3[2,], ytop = f3[1,], xright = f3[2,] + f3[3,], 
+     ybottom = f3[1,] + f3[4,], border = 'blue', lwd = 2)
+rect(xleft = f4[2,], ytop = f4[1,], xright = f4[2,] + f4[3,], 
+     ybottom = f4[1,] + f4[4,], border = 'blue', lwd = 2)
+
+```
+
+Até agora está dando tudo certo, a API conseguiu identificar os rostos dos campeões, agora vamos ver que tipo de emoção estão passando. Convenhamos, tirando o Maurílio eu não sei de nada, talvez um Rogerinho "full putasso".
+
+```{r part3, echo = TRUE}
+# Os dados das emoções vem em lista e um pouco bagunçados,
+# então vamos arrumar e traduzir
+
+emot <-  c('Raiva','Desprezo','Desgosto','Medo',
+           'Felicidade','Neutro','Tristeza','Surpresa')
+
+rogerinho <- faces[[1]]$faceAttributes$emotion %>% as_tibble() %>% t() %>% 
+  as.data.frame() %>% rownames_to_column("emotion") %>%
+  mutate(emotion = emot)
+
+julinho <- faces[[2]]$faceAttributes$emotion %>% as_tibble() %>% t() %>% 
+  as.data.frame() %>% rownames_to_column("emotion") %>%
+  mutate(emotion = emot)
+
+maurilio <- faces[[3]]$faceAttributes$emotion %>% as_tibble() %>% t() %>% 
+  as.data.frame() %>% rownames_to_column("emotion") %>%
+  mutate(emotion = emot)
+
+renan <- faces[[4]]$faceAttributes$emotion %>% as_tibble() %>% t() %>%
+  as.data.frame() %>% rownames_to_column("emotion") %>%
+  mutate(emotion = emot)
+
+### Preparando os gráficos
+
+p1 <- rogerinho %>% ggplot(aes(x = emotion, y = V1, fill = emotion)) +
+              geom_bar(stat = 'identity')+
+              scale_y_continuous(labels = scales::percent) +
+  theme(axis.text.x = element_text(angle = 45, size = 8),
+        plot.title = element_text(hjust = 0.5, face = 'bold'),
+        axis.title.x = element_text(face = 'bold'), 
+        axis.title.y = element_text(face = 'bold'),
+        plot.caption = element_text(size = 6))+
+  labs(title = 'Rogerinho do Ingá', x = 'Emoção', y = 'Porcentagem')+
+  guides(fill=guide_legend(title="Emoções"))+ guides(fill=F)
+
+p2 <- julinho %>% ggplot(aes(x = emotion, y = V1, fill = emotion)) +
+  geom_bar(stat = 'identity')+
+  scale_y_continuous(labels = scales::percent) +
+  theme(axis.text.x = element_text(angle = 45, size = 8), 
+        plot.title = element_text(hjust = 0.5, face = 'bold'),
+        axis.title.x = element_text(face = 'bold'),
+        axis.title.y = element_text(face = 'bold'),
+        plot.caption = element_text(size = 6))+
+  labs(title = 'Julinho da Van', x = 'Emoção', y = 'Porcentagem')+
+  guides(fill=guide_legend(title="Emoções"))+ guides(fill=F)
+
+p3 <- maurilio %>% ggplot(aes(x = emotion, y = V1, fill = emotion)) +
+  geom_bar(stat = 'identity')+
+  scale_y_continuous(labels = scales::percent) +
+  theme(axis.text.x = element_text(angle = 45, size = 8), 
+        plot.title = element_text(hjust = 0.5, face = 'bold'),
+        axis.title.x = element_text(face = 'bold'), 
+        axis.title.y = element_text(face = 'bold'),
+        plot.caption = element_text(size = 6))+
+  labs(title = 'Maurílio', x = 'Emoção', y = 'Porcentagem')+
+  guides(fill=guide_legend(title="Emoções"))+ guides(fill=F)
+
+p4 <- renan %>% ggplot(aes(x = emotion, y = V1, fill = emotion)) +
+  geom_bar(stat = 'identity')+
+  scale_y_continuous(labels = scales::percent) +
+  theme(axis.text.x = element_text(angle = 45, size = 8), 
+        plot.title = element_text(hjust = 0.5, face = 'bold'),
+        axis.title.x = element_text(face = 'bold'), 
+        axis.title.y = element_text(face = 'bold'),
+        plot.caption = element_text(size = 6))+
+  labs(title = 'Renan', x = 'Emoção', y = 'Porcentagem')+ guides(fill=F)
+
+## Usando o grid.arrange para plotar tudo junto (semelhante ao par())
+gridExtra::grid.arrange(p1, p2, p3, p4, ncol=2, 
+             top=textGrob("Análise de emoções: Choque de Cultura", 
+                          gp = gpar(fontsize=18, fontface = 'bold')))
+
+```
+
+Pronto, dados o nosso gráfico temos nossas respostas. O p̶a̶l̶e̶s̶t̶r̶i̶n̶h̶a Maurílio é um cara muito feliz e sem sombra de dúvidas. O Julinho da Van já sabemos que é um cara estranho, apesar de ser neutro tem lá aquele seu fundo de desprezo. O Renan tenta esconder mas talvez sintia falta do seu pequeno no set na hora da foto?
+Por último temos o Rogerinho do Ingá, um cara complexo e de muita emoções, apesar de parecer um cara amigável tem aquele ódio por todos que não entendem de cultura como essa grande equipe.
+
+Ideias e sugestões para novos posts? Só mandar aí nos comentários, até a próxima galera.
+
+
+

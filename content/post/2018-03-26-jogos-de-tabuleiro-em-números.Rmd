@@ -1,0 +1,236 @@
+---
+title: Jogos de tabuleiro em números
+author: Eduardo Ochetski Hellas
+date: '2018-03-26'
+slug: jogos-de-tabuleiro-em-números
+categories: []
+tags: ["boardgame", "r", "dados", "visualização"]
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F)
+
+library('dplyr')
+library('tidyr')
+library('purrr')
+library('ggplot2')
+library('ggthemes')
+library('RColorBrewer')
+library('colorRamps')
+library('scales')
+library('colorspace')
+library("gridExtra")
+
+
+# setwd('C:/Users/ehell/Desktop/bgg')
+# load(file = "bgg_info_mt.RData")
+load(file = "C:/Users/ehell/Desktop/bgg/bgg_info_mt2.RData")
+
+
+############### corrigir formatos
+
+
+info[[1]] <- as.numeric(info[[1]])
+info$ano <- as.numeric(info$ano)
+
+info$Geek.Rating <- as.numeric(info$Geek.Rating)
+info$Avg.Rating <- as.numeric(info$Avg.Rating)
+info$Num.Voters <- as.numeric(info$Num.Voters)
+info$best_play <- lapply(info$best_play, as.numeric)
+info$dep <- as.factor(info$dep)
+info$comp_peso <- as.numeric(info$comp_peso)
+info$min_play <- as.numeric(info$min_play)
+info$max_play <- as.numeric(info$max_play)
+info$min_tempo <- as.numeric(info$min_tempo)
+info$max_tempo <- as.numeric(info$max_tempo)
+
+exp <- lapply(info[['exps_de']], ncol)
+exp <- unlist(as.character(exp))
+exp[exp == 'NULL'] <- 'N'
+exp[exp == '6'] <- 'Y'
+
+n_mec <- lapply(info[['mecanicas']], nrow)
+n_mec <- unlist(as.character(n_mec))
+n_mec <- as.numeric(n_mec)
+
+own <- as.numeric(unlist(lapply(info$stats, '[[', 11)))
+
+dados <- data.frame(rank = info$Board.Game.Rank, ano = info$ano, title = info$title, expansion = exp,
+                             rating = info$Avg.Rating, weight = info$comp_peso, own = own,
+                            dependencia = info$dep, n_mec = n_mec)
+
+```
+
+
+Como primeiro post vamos ver um dos meu assuntos favoritos: jogos de tabuleiro. Esse post já começa como uma aventura atrasada pois já tinha feito as extrações dos dados do site [Board game Geek](https://boardgamegeek.com/) faz um tempo, mas acabou que com minha enrolação um cara acabou 
+[analisando antes de mim!](http://dvatvani.github.io/BGG-Analysis-Part-1.html) Pelo menos me serviu de inspiração para começar. Assim, deixo avisado de antemão que algumas análises podem ser semelhantes mas quero dar foco diferente (e em português!).
+
+## Jogos de tabuleiro modernos
+
+ Como assim uma análise de jogos de tabuleiro? Não existe só Banco Imobiliário, Detetive, War, Jogo da Vida e, pros mais tradicionais, um carteado, Dominó e Xadrez? Mas é claro que não!
+
+Na verdade existem muitos jogos de tabuleiro, e a cada ano as pessoas estão criando mais, nos últimos anos teve um *boom* no Brasil (e no mundo todo), é até possível que seu vizinho seja um viciado e você nem saiba!
+
+O site [Board Game Geek](https://boardgamegeek.com/) que citei anteriormente é o maior catálogo online de jogos de tabuleiro  que conheço, a extração que fiz possui o registro de 70.563 jogos e mais 15.159 expansões. Existe um [site nacional](http://ludopedia.com.br/) mas fazer extrações dele é mais chato, apesar das informações contidas dar mais precisão do público brasileiro (quem sabe no futuro?).
+
+O gráfico a seguir mostra a quantidade de lançamentos por ano desde 1900. Decidi fazer a anotação de 3 marcos: o lançamento do jogo Catan, provavelmente o jogo moderno mais popular que existe, em segundo a criação do BGG e, por último, o lançamento da plataforma [Kickstarter](http://kickstarter.com/) que é onde boa parte dos novos lançamentos ocorrem.
+
+```{r lancamentos}
+anos <- filter(dados, ano != 'NA' & ano >= 1900 & ano <= 2017 & exp == 'N')
+
+ggplot(anos, aes(x = ano)) +
+  theme_bw()+
+  geom_line(stat='count', color = 'black')+
+  geom_point(stat = 'count', color = 'black', size = .8)+
+  geom_vline(aes(xintercept=2000, color = 'Criação do BGG'), linetype="dashed")+
+  geom_vline(aes(xintercept=1995, color = 'Lançamento do Catan'), linetype="dashed")+
+  geom_vline(aes(xintercept=2009, color = 'Criação do Kickstarter'), linetype="dashed")+
+  scale_color_manual(name = "",
+                     values = c("Criação do BGG" = "red", 'Lançamento do Catan' = 'blue',
+                                'Criação do Kickstarter' = 'darkgreen'))+
+  theme(legend.position=c(.20,.85), plot.title = element_text(hjust = 0.5, face = 'bold'),
+        axis.title.x = element_text(face = 'bold'), axis.title.y = element_text(face = 'bold'),
+        plot.caption = element_text(size = 6))+
+  labs(title="Número de lançamentos por ano", x ="Ano", y = "Número de lançamentos",
+       caption = 'Dados extraídos de https://boardgamegeek.com')
+
+```
+
+É interessante notar que teve um incremento de lançamentos de forma exponencial nos últimos anos, alcançando a marca de cerca de 3.600 lançamentos por ano.
+
+Muitos jogos, mas mais importante, qual jogo é bom de ter? No BGG, as pessoas cadastradas podem manter registro de suas coleções então podemos ter uma ideia de quais são os jogos mais populares. Como disse anteriormente, Catan é o jogo mais popular, presente em mais de 100 mil coleções, seguido por como Carcassonne e Pandemic. E olha que aqui estamos falando apenas dos que registram no site, imagine quantos existem por aí.
+
+```{r njogos, fig.width=9, fig.height=7}
+quant1 <- filter(dados, expansion == 'N') %>% top_n(own, n=50)
+
+ ggplot(quant1, aes(y = own, x = reorder(title, own))) +
+   geom_bar(stat = 'identity', width = .5, fill = 'red') +
+   coord_flip()+
+     theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5, face = 'bold'),
+        axis.title.x = element_text(face = 'bold'), axis.title.y = element_text(face = 'bold'),
+        plot.caption = element_text(size = 6))+
+     scale_y_continuous(expand = c(.01, .01)) +
+  labs(title="Número de pessoas que possuem o jogo", x ="Jogo", y = "Quantidade de coleções",
+       caption = 'Dados extraídos de https://boardgamegeek.com')
+ 
+```
+
+
+## Ranking
+
+Tudo bem, temos um monte de jogos, mas não tenho tempo de jogar todos eles, infelizmente. Para saber qual vale a pena sempre vemos o *ranking* dos jogos, mas a dúvida que fica, os jogos mais novos são melhores que os mais antigos? Bem, talvez.
+
+```{r ranking, fig.width=9, fig.height=7}
+
+ratings <- filter(dados, rank != 'NA' & ano != 'NA' & ano >= 1990 & ano <= 2017 & exp == 'N')
+
+means <- ratings %>% group_by(ano) %>% summarize(mean = mean(rating)) %>% as.data.frame()
+
+ratings <- merge(ratings, means, by = 'ano')
+
+ggplot(ratings, aes(x = as.factor(ano), fill = mean, y = rating)) +
+  geom_boxplot() + 
+  theme_bw()+
+  scale_fill_gradientn(name = 'Média', colours=diverge_hsv(5))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 0))+
+theme(plot.title = element_text(hjust = 0.5, face = 'bold'),
+      axis.title.x = element_text(face = 'bold'), axis.title.y = element_text(face = 'bold'),
+      plot.caption = element_text(size = 6), legend.title = element_text())+
+  labs(title="Boxplots de notas por ano", x ="Ano", y = "Nota",
+       caption = 'Dados extraídos de https://boardgamegeek.com')
+
+```
+
+As notas do BGG são feitas a partir do que eles chamam de "Média Bayesiana", ou seja, a nota de um jogo é uma média das notas de cada jogador ponderada pelo número de votos. Pelo gráfico somos capazes de ver que os jogos mais recentes, de forma geral, tem notas maiores. Todavia temos um problema: elas são mais altas porque os jogos são de fato melhores, porque os jogos mais recentes são mais populares ou porque o padrão de voto mudou, ou seja, a nota 5 de dez anos atrás seria equivalente ao 7 de hoje?
+
+
+## Complexidade e mecânicas
+
+Essa é a sessão que eu decidi ser, a "visualização ambiciosa do dia". Fiz uma mistura de informação para ver se temos algum *insight* interessante. Os jogos do BGG possuem [51 mecânicas possíveis](https://boardgamegeek.com/browse/boardgamemechanic), onde um jogo pode ser construído utilizando diversas mecânicas mas, um jogo com mais mecânicas influi diretamente num jogo mais pesado (complexo)?
+
+
+```{r complex, warnings = F, fig.width=9, fig.height=7}
+
+mecas <- filter(dados, weight > 0 & rank != 'NA' & ano != 'NA' & ano >= 1990 & ano <= 2017 & exp == 'N')
+
+mecas$orderrank <- rank(mecas$weight,ties.method="first")
+
+ggplot(data=mecas, aes(x=ano, y=n_mec, color = weight, order=orderrank)) +
+  geom_point(position=position_jitter(width = .4))+
+  theme_bw()+
+  scale_color_gradientn(name = 'Peso', colors = brewer.pal(5, 'YlOrRd') )+
+  stat_summary(fun.y=mean, aes(lty = 'Média'), color = 'blue', geom="line", size=.7)+
+  scale_x_discrete('Ano',breaks = 1990:2017, limits = 1990:2017)+
+  scale_y_discrete('Número de mecânicas',breaks = 1:6, limits = 1:6)+
+  scale_linetype_manual(name = '', values = 'solid')+
+  theme(axis.text.x = element_text(angle = 90, vjust = .5),plot.title = element_text(hjust = 0.5, face = 'bold'),
+        axis.title.x = element_text(face = 'bold'), axis.title.y = element_text(face = 'bold'),
+        plot.caption = element_text(size = 6))+
+  labs(title = 'Número de mecânicas por ano e peso', caption = 'Dados extraídos de https://boardgamegeek.com')
+
+```
+
+Ao que tudo indica, não necessariamente. Se formos fazer a correlação de pearson entre Peso e Quantidade de mecânicas obtemos umas correlação de 0.26 (numa escala de -1 a 1), que indica uma fraca correlação entre as variáveis.
+
+Por último, vamos ver quais são as mecânicas mais bem colocadas no BGG, apesar de não possuírem um Rank individual, vou mostrar quais são as que se repetem mais vezes nos jogos.
+
+```{r mecas, fig.width=9, fig.height=7}
+mecanicas <- tibble(title = info$title,mecs = info$mecanicas)
+ 
+ mecanicas <- mecanicas %>% 
+   mutate(mecs = map(mecs, as_tibble)) %>%
+   unnest()
+ mecanicas <- mecanicas[,c(1,2)]
+ dados$title <- as.character(dados$title)
+ 
+ mecanicas <- merge(mecanicas, dados, by = 'title')
+ colnames(mecanicas)[2] <- 'mecanica'
+
+meca2 <- mecanicas %>% filter(expansion == 'N') %>% count(mecanica)%>%
+   mutate(perc = n / sum(n))
+
+   ggplot(meca2, aes(x = reorder(mecanica, perc), y = perc)) +
+     geom_bar(stat = 'identity', fill = 'red', width = .5) +
+     coord_flip() +
+       theme_bw()+
+scale_y_continuous(name = 'Porcentagem',labels=percent, breaks = seq(0, .12, 0.02),
+                      limits = c(0,0.125), expand = c(0,0)) +
+     scale_x_discrete(name = 'Mecânica')+
+  theme(axis.text.x = element_text(vjust = .5),plot.title = element_text(hjust = 0.5, face = 'bold'),
+        axis.title.x = element_text(face = 'bold'), axis.title.y = element_text(face = 'bold'),
+        plot.caption = element_text(size = 6))+
+     labs(title = "Porcentagem de jogos por mecânica")
+```
+
+Ao fazermos uma comparação global temos que as mecânicas mais comum são as que envolvem aleatoriedade, rolagem de dados e "Roll/Spin". Mas ao darmos um zoom aos jogos mais bem classificados isso já não é mais verdade.
+
+```{r mecas2, fig.width=9, fig.height=7}
+ tam <- c(10, 20, 50, 200)
+for(i in 1:4){ 
+ tt <- mecanicas %>% filter(expansion == 'N', rank <= tam[i]) %>% count(mecanica)%>%
+   mutate(perc = n / sum(n)) %>% top_n(15, perc)
+
+ 
+p <- ggplot(tt, aes(x = reorder(mecanica, perc), y = perc)) +
+     geom_bar(stat = 'identity', fill = 'red', width = .5) +
+     coord_flip() +
+       theme_bw()+
+    scale_y_continuous(name = 'Porcentagem',labels=percent, breaks = seq(0, .16, 0.02),
+                      limits = c(0,0.17), expand = c(0,0)) +
+     scale_x_discrete(name = 'Mecânica')+
+     theme(axis.text.y = element_text(size=8, vjust = .3), 
+         plot.title = element_text(vjust = .5))+
+     labs(title = paste("Top", tam[i], "rank"))
+ 
+ assign(paste0("p",i), p)
+ }
+ 
+grid.arrange(p1, p2, p3, p4, ncol=2)
+
+
+```
+
+
+Por hoje é tudo, vamos considerar isso como uma "Parte I", porque jogos de tabuleiro nunca são demais e ainda tenho muitos dados para explorar. Comentem e digam que tipo de análise gostariam de ver numa segunda parte.

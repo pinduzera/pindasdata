@@ -1,0 +1,41 @@
+---
+title: Jogos de tabuleiro em números
+author: Eduardo Ochetski Hellas
+date: '2018-03-26'
+slug: jogos-de-tabuleiro-em-números
+categories: []
+tags: ["boardgame", "r", "dados", "visualização"]
+---
+
+
+
+<p>Como primeiro post vamos ver um dos meu assuntos favoritos: jogos de tabuleiro. Esse post já começa como uma aventura atrasada pois já tinha feito as extrações dos dados do site <a href="https://boardgamegeek.com/">Board game Geek</a> faz um tempo, mas acabou que com minha enrolação um cara acabou
+<a href="http://dvatvani.github.io/BGG-Analysis-Part-1.html">analisando antes de mim!</a> Pelo menos me serviu de inspiração para começar. Assim, deixo avisado de antemão que algumas análises podem ser semelhantes mas quero dar foco diferente (e em português!).</p>
+<div id="jogos-de-tabuleiro-modernos" class="section level2">
+<h2>Jogos de tabuleiro modernos</h2>
+<p>Como assim uma análise de jogos de tabuleiro? Não existe só Banco Imobiliário, Detetive, War, Jogo da Vida e, pros mais tradicionais, um carteado, Dominó e Xadrez? Mas é claro que não!</p>
+<p>Na verdade existem muitos jogos de tabuleiro, e a cada ano as pessoas estão criando mais, nos últimos anos teve um <em>boom</em> no Brasil (e no mundo todo), é até possível que seu vizinho seja um viciado e você nem saiba!</p>
+<p>O site <a href="https://boardgamegeek.com/">Board Game Geek</a> que citei anteriormente é o maior catálogo online de jogos de tabuleiro que conheço, a extração que fiz possui o registro de 70.563 jogos e mais 15.159 expansões. Existe um <a href="http://ludopedia.com.br/">site nacional</a> mas fazer extrações dele é mais chato, apesar das informações contidas dar mais precisão do público brasileiro (quem sabe no futuro?).</p>
+<p>O gráfico a seguir mostra a quantidade de lançamentos por ano desde 1900. Decidi fazer a anotação de 3 marcos: o lançamento do jogo Catan, provavelmente o jogo moderno mais popular que existe, em segundo a criação do BGG e, por último, o lançamento da plataforma <a href="http://kickstarter.com/">Kickstarter</a> que é onde boa parte dos novos lançamentos ocorrem.</p>
+<p><img src="/post/2018-03-26-jogos-de-tabuleiro-em-números_files/figure-html/lancamentos-1.png" width="672" /></p>
+<p>É interessante notar que teve um incremento de lançamentos de forma exponencial nos últimos anos, alcançando a marca de cerca de 3.600 lançamentos por ano.</p>
+<p>Muitos jogos, mas mais importante, qual jogo é bom de ter? No BGG, as pessoas cadastradas podem manter registro de suas coleções então podemos ter uma ideia de quais são os jogos mais populares. Como disse anteriormente, Catan é o jogo mais popular, presente em mais de 100 mil coleções, seguido por como Carcassonne e Pandemic. E olha que aqui estamos falando apenas dos que registram no site, imagine quantos existem por aí.</p>
+<p><img src="/post/2018-03-26-jogos-de-tabuleiro-em-números_files/figure-html/njogos-1.png" width="864" /></p>
+</div>
+<div id="ranking" class="section level2">
+<h2>Ranking</h2>
+<p>Tudo bem, temos um monte de jogos, mas não tenho tempo de jogar todos eles, infelizmente. Para saber qual vale a pena sempre vemos o <em>ranking</em> dos jogos, mas a dúvida que fica, os jogos mais novos são melhores que os mais antigos? Bem, talvez.</p>
+<p><img src="/post/2018-03-26-jogos-de-tabuleiro-em-números_files/figure-html/ranking-1.png" width="864" /></p>
+<p>As notas do BGG são feitas a partir do que eles chamam de “Média Bayesiana”, ou seja, a nota de um jogo é uma média das notas de cada jogador ponderada pelo número de votos. Pelo gráfico somos capazes de ver que os jogos mais recentes, de forma geral, tem notas maiores. Todavia temos um problema: elas são mais altas porque os jogos são de fato melhores, porque os jogos mais recentes são mais populares ou porque o padrão de voto mudou, ou seja, a nota 5 de dez anos atrás seria equivalente ao 7 de hoje?</p>
+</div>
+<div id="complexidade-e-mecanicas" class="section level2">
+<h2>Complexidade e mecânicas</h2>
+<p>Essa é a sessão que eu decidi ser, a “visualização ambiciosa do dia”. Fiz uma mistura de informação para ver se temos algum <em>insight</em> interessante. Os jogos do BGG possuem <a href="https://boardgamegeek.com/browse/boardgamemechanic">51 mecânicas possíveis</a>, onde um jogo pode ser construído utilizando diversas mecânicas mas, um jogo com mais mecânicas influi diretamente num jogo mais pesado (complexo)?</p>
+<p><img src="/post/2018-03-26-jogos-de-tabuleiro-em-números_files/figure-html/complex-1.png" width="864" /></p>
+<p>Ao que tudo indica, não necessariamente. Se formos fazer a correlação de pearson entre Peso e Quantidade de mecânicas obtemos umas correlação de 0.26 (numa escala de -1 a 1), que indica uma fraca correlação entre as variáveis.</p>
+<p>Por último, vamos ver quais são as mecânicas mais bem colocadas no BGG, apesar de não possuírem um Rank individual, vou mostrar quais são as que se repetem mais vezes nos jogos.</p>
+<p><img src="/post/2018-03-26-jogos-de-tabuleiro-em-números_files/figure-html/mecas-1.png" width="864" /></p>
+<p>Ao fazermos uma comparação global temos que as mecânicas mais comum são as que envolvem aleatoriedade, rolagem de dados e “Roll/Spin”. Mas ao darmos um zoom aos jogos mais bem classificados isso já não é mais verdade.</p>
+<p><img src="/post/2018-03-26-jogos-de-tabuleiro-em-números_files/figure-html/mecas2-1.png" width="864" /></p>
+<p>Por hoje é tudo, vamos considerar isso como uma “Parte I”, porque jogos de tabuleiro nunca são demais e ainda tenho muitos dados para explorar. Comentem e digam que tipo de análise gostariam de ver numa segunda parte.</p>
+</div>
