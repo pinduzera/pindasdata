@@ -8,7 +8,7 @@ copyright = "&copy; 2020. All rights reserved."
 
 googleAnalytics = "251307803"
 
-disqusShortname = "pindasdatav2"
+# disqusShortname = "pindasdatav2"
 
 # enableRobotsTXT = true
 [languages]
