@@ -1,4 +1,4 @@
-baseurl = "pindasdata.netlify.app"
+baseurl = "https://pindasdata.netlify.app"
 languageCode = "pt"
 defaultContentLanguage = "pt"
 title = "Hugo Theme Dream"
@@ -57,7 +57,7 @@ disqusShortname = "pindasdatav2"
 
   siteStartYear = 2018
 
-  #favicon = "/favicon.ico"
+  favicon = "/favicon.ico"
 
   highlightjs = true
   # highlightjsCDN = "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"
