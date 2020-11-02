@@ -8,20 +8,20 @@ copyright = "&copy; 2020. All rights reserved."
 
 googleAnalytics = "251307803"
 
-# disqusShortname = "pindasdatav2"
+disqusShortname = "pindasdatav2"
 
 # enableRobotsTXT = true
 [languages]
   [languages.pt]
     languageName = "Portuguese"
     weight = 1
-    contentDir = "content/portuguese"
+    #contentDir = "content/portuguese"
     motto = "My place in the internet, about many things and R."
 
   [languages.en]
     languageName = "English"
     weight = 2
-    contentDir = "content/english"
+    #contentDir = "content/english"
     motto = "Meu lugar na internet, sobre muitas coisas e R."
 
     
