@@ -1,0 +1,56 @@
+[blogAlias]
+other = "'s blog"
+
+[home]
+other = "Inicio"
+
+[backToHome]
+other = "Voltar ao inicio"
+
+[flip]
+other = "Girar!"
+
+[archives]
+other = "Arquivos"
+
+[allTags]
+other = "Todas as etiquetas"
+
+[tag]
+one = "etiqueta"
+other = "{{ .Count }} etiquetas"
+
+[allCategories]
+other = "Todas as categorias"
+
+[category]
+one = "categoroa"
+other = "{{ .Count }} categorias"
+
+[article]
+one = "1 artigo"
+other = "{{ .Count }} artigos"
+
+[socialLinks]
+other = "Redes sociais"
+
+[minuteRead]
+other = " minutos de leitura"
+
+[updateAt]
+other = "Atualizado em"
+
+[noTag]
+other = "Sem etiquetas"
+
+[prevPage]
+other = "Página anterior"
+
+[nextPage]
+other = "Página seguinte"
+
+[saveAsImage]
+other = "Guardar como imagen"
+
+[motto]
+motto = "Meu lugar na internet, sobre muitas coisas e R."

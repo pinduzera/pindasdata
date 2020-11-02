@@ -1,17 +1,30 @@
-baseurl = "https://example.com"
-languageCode = "en"
-defaultContentLanguage = "en"
+baseurl = "pindasdata.netlify.app"
+languageCode = "pt"
+defaultContentLanguage = "pt"
 title = "Hugo Theme Dream"
 theme = "hugo-theme-dream"
 
-# copyright = ""
+copyright = "&copy; 2020. All rights reserved."
 
-# googleAnalytics = ""
+googleAnalytics = "251307803"
 
-# disqusShortname = ""
+disqusShortname = "pindasdatav2"
 
 # enableRobotsTXT = true
+[languages]
+  [languages.pt]
+    languageName = "Portuguese"
+    weight = 1
+    contentDir = "content/portuguese"
+    motto = "My place in the internet, about many things and R."
 
+  [languages.en]
+    languageName = "English"
+    weight = 2
+    contentDir = "content/english"
+    motto = "Meu lugar na internet, sobre muitas coisas e R."
+
+    
 [params]
   background = "black"
   # backgroundImage = "/me/background.jpg"
@@ -20,7 +33,7 @@ theme = "hugo-theme-dream"
   author = "Eduardo Ochetski"
   # description = ""
   avatar = "/img/profile2.jpg"
-  motto = "Meu lugar na internet, sobre muitas coisas e R."
+  # motto = "Meu lugar na internet, sobre muitas coisas e R."
   # categoriesLimitInHeader = 6
   # headerBottomText = ""
 
@@ -44,11 +57,11 @@ theme = "hugo-theme-dream"
 
   siteStartYear = 2018
 
-  # favicon = "/favicon.ico"
+  favicon = "/favicon.ico"
 
   highlightjs = true
   # highlightjsCDN = "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"
-  # highlightjsExtraLanguages = ["ocaml"]
+  highlightjsExtraLanguages = ["ocaml", "R", "Rmd", "Python", "yaml", "toml"]
   # highlightjsTheme = "gruvbox-light"
   # highlightjsThemeDark = "gruvbox-dark"
 
