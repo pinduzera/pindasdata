@@ -1,0 +1,65 @@
+baseurl = "https://example.com"
+languageCode = "en"
+defaultContentLanguage = "en"
+title = "Hugo Theme Dream"
+theme = "hugo-theme-dream"
+
+# copyright = ""
+
+# googleAnalytics = ""
+
+# disqusShortname = ""
+
+# enableRobotsTXT = true
+
+[params]
+  background = "black"
+  # backgroundImage = "/me/background.jpg"
+  linkColor = "seagreen"
+
+  author = "Eduardo Ochetski"
+  # description = ""
+  avatar = "/img/profile2.jpg"
+  motto = "Meu lugar na internet, sobre muitas coisas e R."
+  # categoriesLimitInHeader = 6
+  # headerBottomText = ""
+
+  rss = true
+
+  # utterancesRepo = ""
+
+  # valine = true
+  # LEANCLOUD_APP_ID = ""
+  # LEANCLOUD_APP_KEY = ""
+  
+  email = "ehellas@gmail.com"
+  twitter = "pinduzera"
+  facebook = "eduardo.ochetskihellas"
+  instagram = "pinduzera/"
+  # mastodon = ""
+  linkedin = "eduardo-ochetski-hellas-8b0771110/"
+  github = "pinduzera/"
+  stackoverflow = "5322743/ochetski"
+  # codepen = ""
+
+  siteStartYear = 2018
+
+  # favicon = "/favicon.ico"
+
+  highlightjs = true
+  # highlightjsCDN = "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"
+  # highlightjsExtraLanguages = ["ocaml"]
+  # highlightjsTheme = "gruvbox-light"
+  # highlightjsThemeDark = "gruvbox-dark"
+
+  # search
+  # enableSearch = true
+
+  # options
+  # showSummaryCoverInPost = true
+  # hasTwitterEmbed = true
+
+  # dark mode
+  darkLinkColor = "darkseagreen"
+  darkNav = true 
+  dark404 = true
