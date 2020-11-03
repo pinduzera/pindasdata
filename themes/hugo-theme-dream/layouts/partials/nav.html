@@ -19,11 +19,4 @@
     <i class="large link search icon" onclick="toggleSearch()"></i>
   </div>
   {{ end }}
-<div align = "right">
-        <ul class="language-list">
-            {{ range $.Site.Home.AllTranslations }}
-            <li><a href="{{ .Permalink }}">{{ .Language.LanguageName }}</a></li>
-            {{ end }}
-        </ul>
-    </div>
 </nav>
