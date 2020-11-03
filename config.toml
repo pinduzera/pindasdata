@@ -7,7 +7,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", "\\.knit\\.md$", "\\.utf8\
 
 copyright = "&copy; 2018. All rights reserved."
 
-googleAnalytics = "G-0QK5RQT3KH"
+googleAnalytics = "UA-116203285-2"
 
 disqusShortname = "pindasdatav2"
 
