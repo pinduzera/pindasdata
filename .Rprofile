@@ -8,4 +8,4 @@ options(
   blogdown.knit.on_save = TRUE  # automatically knit Rmd on save
 )
 
-options(blogdown.hugo.version = "0.77.0")
+options(blogdown.hugo.version = "0.120.2")

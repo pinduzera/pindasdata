@@ -7,7 +7,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", "\\.knit\\.md$", "\\.utf8\
 
 copyright = "&copy; 2018. All rights reserved."
 
-googleAnalytics = "UA-116203285-2"
+# googleAnalytics = "UA-116203285-2"
 
 disqusShortname = "pindasdatav2"
 
@@ -43,7 +43,7 @@ enableRobotsTXT = true
   facebook = "eduardo.ochetskihellas"
   instagram = "pinduzera/"
   # mastodon = ""
-  linkedin = "eduardo-ochetski-hellas-8b0771110/"
+  linkedin = "eduardohellas/"
   github = "pinduzera/"
   stackoverflow = "5322743/ochetski"
   # codepen = ""
@@ -54,7 +54,7 @@ enableRobotsTXT = true
 
   highlightjs = true
   # highlightjsCDN = "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"
-  highlightjsExtraLanguages = ["ocaml", "R", "Rmd", "Python", "yaml", "toml"]
+   highlightjsExtraLanguages = ["ocaml", "R", "Rmd", "Python", "yaml", "toml"]
    highlightjsTheme = "gruvbox-light"
    highlightjsThemeDark = "monokai-sublime"
 
